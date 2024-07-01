@@ -1,4 +1,4 @@
-paddlepaddle==2.2.2
-paddleocr==2.2
-openvino-dev==2022.1.0
-protobuf==3.20
+paddlepaddle==2.5.2
+paddleocr==2.7.0.3
+openvino
+protobuf

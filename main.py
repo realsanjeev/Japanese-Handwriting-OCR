@@ -39,13 +39,12 @@ def list_file_paths_in_folder(folder_path):
 def main():
     INPUT_IMAGE_PATH = sys.argv[1]
     FILE_NAME = os.path.splitext(os.path.basename(INPUT_IMAGE_PATH))[0]
-
     text_detection = TextDetection(det_model_dir='model/det_model/ch_ppocr_server_v2.0_det_infer/')
     text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP16/handwritten-japanese-recognition-0001')
-
+    print("+"*100)
+    print("="*321, INPUT_IMAGE_PATH)
     image = cv.imread(INPUT_IMAGE_PATH)
     # show_image(image, "Input Image")
-
     bounding_boxes = text_detection.detect_text_coordinates(INPUT_IMAGE_PATH)
     # print("Bounding Boxes: ", bounding_boxes)
     sorted_bounding_boxes = text_detection.sort_bounding_boxes(bounding_boxes)
