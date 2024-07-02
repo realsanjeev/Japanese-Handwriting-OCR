@@ -5,10 +5,10 @@ from itertools import groupby
 class TextRecognition:
     def __init__(self, model_path):
         self.model_path = model_path
-        self.core = Core(xml_config_file="/home/sanjeev/Desktop/test/Japanese-Handwritten-OCR/model/handwritten-japanese-recognition-0001/FP16/handwritten-japanese-recognition-0001.xml")  # Initialize Core from openvino.runtime
+        self.core = Core()  # Initialize Core from openvino.runtime
         self.model = self.load_model()
         self.input_tensor, self.output_tensor = self.get_model_tensors()
-        self.input_shape = self.input_tensor.shape
+        self.H, self.W = self.get_expected_height_and_weight()
 
     def load_model(self):
         model = self.core.read_model(model=f"{self.model_path}.xml")
@@ -19,11 +19,16 @@ class TextRecognition:
         input_tensor = next(iter(self.model.inputs))
         output_tensor = next(iter(self.model.outputs))
         return input_tensor, output_tensor
+    
+    def get_expected_height_and_weight(self):
+        _, _, H, W = self.input_tensor.shape
+        return H, W
 
     def get_predictions_index(self, input_image):
-        input_data = {self.input_tensor.name: input_image}  # Use name attribute
-        results = self.model.infer(inputs=input_data)
-        predictions = results[self.output_tensor.name]
+        input_data = {self.input_tensor.get_any_name(): input_image}  # Use get_any_name() for tensor name
+        infer_request = self.model.create_infer_request()
+        results = infer_request.infer(inputs=input_data)
+        predictions = results[self.output_tensor.get_any_name()]
         predictions = np.squeeze(predictions)
         predictions_index = np.argmax(predictions, axis=1)
         return predictions_index

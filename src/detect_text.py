@@ -57,9 +57,7 @@ if __name__ == "__main__":
     image_path = '/home/sanjeev/Desktop/test/Japanese-Handwritten-OCR/demo.png'
     output_image_path = 'path_to_output_image.jpg'
     detector = TextDetection(det_model_dir)
-    with open("XXXXXXXX.tst", "w") as fp:
-        fp.write("This is the life")
-    print("+"*32)
+
     bounding_boxes = detector.detect_text_coordinates(image_path)
     sorted_boxes = TextDetection.sort_bounding_boxes(bounding_boxes)
     

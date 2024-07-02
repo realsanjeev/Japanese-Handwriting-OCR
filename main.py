@@ -41,8 +41,6 @@ def main():
     FILE_NAME = os.path.splitext(os.path.basename(INPUT_IMAGE_PATH))[0]
     text_detection = TextDetection(det_model_dir='model/det_model/ch_ppocr_server_v2.0_det_infer/')
     text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP16/handwritten-japanese-recognition-0001')
-    print("+"*100)
-    print("="*321, INPUT_IMAGE_PATH)
     image = cv.imread(INPUT_IMAGE_PATH)
     # show_image(image, "Input Image")
     bounding_boxes = text_detection.detect_text_coordinates(INPUT_IMAGE_PATH)
@@ -73,12 +71,18 @@ def main():
 
     cropped_image_paths = list_file_paths_in_folder(cropped_images_folder)
     for idx, cropped_image_path in enumerate(cropped_image_paths):
-        PreProcessing.apply_threshold(cropped_image_path, save_path=f'{thresholded_images_folder}/threshold_{idx+1}.jpg')
-        input_image = PreProcessing.resize_image(text_recognition.H, text_recognition.W, f'{thresholded_images_folder}/threshold_{idx+1}.jpg')
+        # for easier debugging make index of threshold and cropped image same
+        index = cropped_image_path.split('/')[-1].split('_')[1].split('.')[0]
+        # print(index)
+        PreProcessing.apply_threshold(cropped_image_path, save_path=f'{thresholded_images_folder}/threshold_{index}.jpg')
+
+        input_image = PreProcessing.resize_image(text_recognition.H, text_recognition.W, f'{thresholded_images_folder}/threshold_{index}.jpg')
         predictions_index = text_recognition.get_predictions_index(input_image)
         output_text = text_recognition.get_text_from_predictions_index(predictions_index, letters)
-        extracted_text[idx + 1] = output_text
-    save_to_json(extracted_text, save_path=f'{output_path}/{FILE_NAME}.json')
+        extracted_text[index] = output_text
+
+    sorted_dict = {key: extracted_text[key] for key in sorted(extracted_text.keys(), key=int, reverse=True)}
+    save_to_json(sorted_dict, save_path=f'{output_path}/{FILE_NAME}.json')
 
     # Delete temporary folder created earlier
     del_folder(temp_folder)
