@@ -26,9 +26,10 @@ class PreProcessing:
         # Resize image to the target height
         resized_image = cv.resize(
             image, None, fx=scale_ratio_height, fy=scale_ratio_height, interpolation=cv.INTER_AREA)
-        
+        cv.imwrite(f'test/resizedpadded_{image_path.split("_")[-1][:-3]}.jpg', resized_image)
         resized_image_width = resized_image.shape[1]
         scale_ratio_width = W / resized_image_width
+        print("*"*100, scale_ratio_width)
 
         if scale_ratio_width < 1:
             resized_image = cv.resize(
@@ -46,7 +47,7 @@ class PreProcessing:
 
         width, height = padded_image.shape
         print(f"Padded Image: {image_path}, Width: {width}, Height: {height}")
-        cv.imwrite(f'images/padded_image/padded_{image_path}.jpg', padded_image)
+        cv.imwrite(f'test/padded_{image_path.split("_")[-1][:-3]}.jpg', padded_image)
 
         # Reshape to match the network input shape
         input_image = padded_image[None, None, :, :]

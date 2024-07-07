@@ -1,48 +1,20 @@
 import cv2 as cv
 import os
 import sys
-import shutil
 from src.detect_text import TextDetection
 from src.pre_process import PreProcessing
 from src.crop_image import CropImage
 from src.recognize_text import TextRecognition
-from src.save_output import save_to_json
+from src.utils import save_to_json, make_folder, del_folder, list_file_paths_in_folder, show_image
 
-
-def show_image(image, window_name):
-    cv.imshow(window_name, image)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-
-def make_folder(folder_path):
-    if not os.path.isdir(folder_path):
-        os.makedirs(folder_path)
-    
-def del_folder(folder_path):
-    shutil.rmtree(folder_path)
-
-def list_file_paths_in_folder(folder_path):
-    file_paths = []
-    try:
-        for file in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, file)
-            # Check if it is a file
-            if os.path.isfile(file_path):
-                file_paths.append(file_path)
-        # Sort the file paths in alphabetical order
-        file_paths.sort()
-    except Exception as e:
-        print(f"An error occured: {e}")
-    
-    return file_paths
 
 def main():
     INPUT_IMAGE_PATH = sys.argv[1]
     FILE_NAME = os.path.splitext(os.path.basename(INPUT_IMAGE_PATH))[0]
     text_detection = TextDetection(det_model_dir='model/det_model/ch_ppocr_server_v2.0_det_infer/')
-    text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP16/handwritten-japanese-recognition-0001')
+    text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP32/handwritten-japanese-recognition-0001')
     image = cv.imread(INPUT_IMAGE_PATH)
-    # show_image(image, "Input Image")
+    show_image(image, "Input Image")
     bounding_boxes = text_detection.detect_text_coordinates(INPUT_IMAGE_PATH)
     # print("Bounding Boxes: ", bounding_boxes)
     sorted_bounding_boxes = text_detection.sort_bounding_boxes(bounding_boxes)

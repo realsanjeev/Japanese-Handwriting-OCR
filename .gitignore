@@ -167,4 +167,7 @@ fonts
 output
 venv_38
 src/__pycache__
+test/*
 test.py
+*.jpg
+*.jpeg

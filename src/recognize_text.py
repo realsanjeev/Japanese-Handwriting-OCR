@@ -45,6 +45,8 @@ class TextRecognition:
         output_text_indexes = list(groupby(predictions_index))
         output_text_indexes = np.array([key for key, _ in output_text_indexes])
         output_text_indexes = output_text_indexes[output_text_indexes != 0]
+        print(output_text_indexes)
         output_char = [letters[letter_index] for letter_index in output_text_indexes]
+        print(output_char)
         output_text = "".join(output_char)
         return output_text
