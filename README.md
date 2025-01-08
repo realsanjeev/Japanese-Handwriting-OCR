@@ -2,7 +2,7 @@
 
 This project implements an Optical Character Recognition (OCR) system for Japanese handwriting using PaddleOCR for text detection and OpenVino's handwritten Japanese text recognition model.
 
-![OCR Pipeline](./Japanese-Handwriting-OCR.png)
+![OCR Pipeline](./japanese-handwriting-images/images/Japanese-Handwriting-OCR.png)
 
 ### Prerequisites
 - Python >= 3.8.0
@@ -29,7 +29,7 @@ To install the required dependencies, run:
 pip install -r requirements.txt
 ```
 
-Next, update the model for text detection and text recognition in [main.py](./main.py):
+Next, update the model for text detection and text recognition in [main.py](./main.py) if you eant different models:
 ```python
 text_detection = TextDetection(det_model_dir='model/det_model/ch_ppocr_server_v2.0_det_infer/')
 text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP32/handwritten-japanese-recognition-0001')
@@ -41,7 +41,7 @@ To process an image of handwritten Japanese text:
 python main.py japanese-handwriting-images/image-03.jpeg
 ```
 ### Demo
-![Demo: Text Detection to Text Recognition](./demo.png)
+![Demo: Text Detection to Text Recognition](./japanese-handwriting-images/images/demo.png)
 
 ### References
 - [PaddleOCR - Official Github Repo](https://github.com/PaddlePaddle/PaddleOCR/blob/main/README_en.md)
