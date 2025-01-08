@@ -38,7 +38,7 @@ text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/
 ### Run the OCR Application
 To process an image of handwritten Japanese text:
 ```bash
-python main.py japanese-handwriting-images/image-01.jpeg
+python main.py japanese-handwriting-images/image-03.jpeg
 ```
 ### Demo
 ![Demo: Text Detection to Text Recognition](./demo.png)

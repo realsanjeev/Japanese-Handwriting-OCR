@@ -166,6 +166,7 @@ images
 fonts
 output
 venv_38
+model/det_model
 src/__pycache__
 test*
 *.jpg
