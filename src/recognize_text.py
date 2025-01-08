@@ -5,7 +5,7 @@ from itertools import groupby
 class TextRecognition:
     def __init__(self, model_path):
         self.model_path = model_path
-        self.core = Core()  # Initialize Core from openvino.runtime
+        self.core = Core()
         self.model = self.load_model()
         self.input_tensor, self.output_tensor = self.get_model_tensors()
         self.H, self.W = self.get_expected_height_and_weight()
@@ -26,9 +26,10 @@ class TextRecognition:
 
     def get_predictions_index(self, input_image):
         input_data = {self.input_tensor.get_any_name(): input_image}  # Use get_any_name() for tensor name
-        infer_request = self.model.create_infer_request()
-        results = infer_request.infer(inputs=input_data)
-        predictions = results[self.output_tensor.get_any_name()]
+        # infer_request = self.model.create_infer_request()
+        # results = infer_request.infer(inputs=input_data)
+        # predictions = results[self.output_tensor.get_any_name()]
+        predictions = self.model([input_image])[self.output_tensor]
         predictions = np.squeeze(predictions)
         predictions_index = np.argmax(predictions, axis=1)
         return predictions_index
