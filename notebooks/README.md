@@ -2,8 +2,7 @@
 
 | S.N | Title                         | Description                                                                                                                                                | Link |
 |-----|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|------|
-| 1   | Handwritten OCR with OpenVINO | - OCR for handwritten Japanese or Chinese text using the OpenVINO Library. <br> - Models in this notebook only support single-line OCR recognition at a time. |      |
-| 2   |                               |                                                                                                                                                            |      |
-| 3   |                               |                                                                                                                                                            |      |
-
-
+| 1   | Handwritten OCR with OpenVINO | - Perform OCR on handwritten Japanese or Chinese text using the OpenVINO Library. <br> - Models in this notebook support single-line OCR recognition only. | [Link](./Handwritten_ocr_with_OpenVINO.ipynb)      |
+| 2   | Paddle OCR                    | - OCR using the PaddleOCR framework. <br> - Supports multiple languages and full-document OCR. <br> - Includes a framework for model fine-tuning. | [Link](./PaddleOCR.ipynb)      |
+| 3   | Layout Parsing in Documents   | - Classify different regions of an image (e.g., figure, text, table). <br> - Use detected text regions as areas of interest for OCR to generate structured output. <br> - OCR can be performed using any engine (default: Tesseract). | [Link](./LayoutParsing_Document.ipynb)      |
+| 4   | Layout Parser Document & OCR with Tesseract Agent | - Use the Tesseract agent engine to perform OCR on table documents. <br> - The default detection model used by the layout parser is Detectron2 (by Meta). | [Link](./LayoutParser_Table_OCR_TesseractAgent.ipynb) |

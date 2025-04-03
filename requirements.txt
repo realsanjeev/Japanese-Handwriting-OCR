@@ -4,3 +4,5 @@ git+https://github.com/PaddlePaddle/PaddleOCR.git#egg=PaddleOCR
 openvino
 protobuf
 
+### dev
+notebook
