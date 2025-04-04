@@ -1,51 +1,95 @@
 # Japanese Handwriting OCR
 
-This project implements an Optical Character Recognition (OCR) system for Japanese handwriting using PaddleOCR for text detection and OpenVino's handwritten Japanese text recognition model.
-
-Look into other OCR technique in [notebook dir](./notebooks/) 
+A robust, modular Optical Character Recognition (OCR) system for Japanese handwriting. This project utilizes:
+-   **PaddleOCR** for text detection.
+-   **OpenVINO** for text recognition.
+-   **Pydantic** for robust configuration.
+-   **In-Memory Processing** for high performance.
 
 ![OCR Pipeline](./japanese-handwriting-images/images/Japanese-Handwriting-OCR.png)
 
-### Prerequisites
-- Python >= 3.8.0 < 3.13
-- Pip >= 24.0
-- PaddleOCR==2.10.0 (Must be less than 3.0)
-- paddlepaddle==3.2.2 (If you get  illegal instruction error. You may update it)
+## 🚀 Features
+-   **Architecture**: Modular design with separate detection, recognition, and pipeline logic.
+-   **Performance**: Fast, in-memory image processing pipeline (no intermediate disk I/O).
+-   **Robustness**: Strong error handling, logging, and type-safe configuration.
+-   **Observability**: Detailed file logging and explicit console feedback.
 
-### Set Up a Virtual Environment
-To create and activate a virtual environment:
+## 🛠️ Prerequisites
+-   Python 3.8+ and <3.13
+-   Pip 24.0+
 
-**On macOS/Linux:**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+## 📥 Installation
 
-**On Windows:**
-```cmd
-python -m venv venv
-venv\Scripts\activate.bat  # Activate the virtual environment on Windows
-pip install -r requirements.txt
-```
+1.  **Clone the repository**:
+    ```bash
+    git clone <repo_url>
+    cd Japanese-Handwriting-OCR
+    ```
 
-**Update the model for text detection and and text recognition**
+2.  **Set up Virtual Environment**:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
 
-You can update the model for text detection and text recognition in [main.py](./main.py) if you want different models:
-```python
-text_detection = TextDetection(det_model_dir='model/det_model/ch_PP-OCRv4_det_infer.tar/')
-text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP32/handwritten-japanese-recognition-0001')
-```
+3.  **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-### Run the OCR Application
-To process an image of handwritten Japanese text:
+## 🏃 Usage
+
+### Basic Execution
+Run OCR on an image using default settings:
 ```bash
 python main.py japanese-handwriting-images/image-03.jpeg
 ```
-### Demo
-![Demo: Text Detection to Text Recognition](./japanese-handwriting-images/images/demo.png)
 
-### References
+### Advanced Options
+Customize execution with command-line arguments:
+```bash
+python main.py <image_path> \
+    --output <dir>      # Custom output directory (default: output)
+    --det_model <path>  # Path to custom detection model
+    --rec_model <path>  # Path to custom recognition model
+```
+
+**Example**:
+```bash
+python main.py input.jpg --output my_results/ --det_model model/custom_det_model/
+```
+
+## 📂 Output
+Upon successful execution, the system generates:
+1.  **Annotated Image** (`.jpg`): The input image with detected bounding boxes and IDs drawn on it.
+2.  **Result JSON** (`.json`): A structured file containing the text content for each detected segment.
+3.  **Logs**: Detailed execution logs are saved in `logs/` directory.
+
+Example Console Output:
+```text
+==================================================
+SUCCESS! Processed 1 text segments.
+==================================================
+📄 Output JSON  : /path/to/project/output/image-03.json
+🖼️  Output Image : /path/to/project/output/image-03.jpg
+📝 Log File     : /path/to/project/logs/ocr_20251210_105653.log
+==================================================
+```
+
+## 🏗️ Architecture
+
+```text
+src/japanese_ocr/
+├── pipeline.py    # Orchestrates the Detection -> Recognition flow
+├── config.py      # Pydantic-based settings management
+├── domain.py      # Data models (BoundingBox, TextSegment)
+├── detection.py   # Wrapper for PaddleOCR
+├── recognition.py # Wrapper for OpenVINO inference
+└── processing.py  # In-memory image operations (Resize, Threshold, Crop)
+```
+
+## 🔗 References
+**PaddlePaddle**
 - [PaddleOCR - Official Github Repo](https://github.com/PaddlePaddle/PaddleOCR/blob/main/README_en.md)
 - [Image Processing in OpenCV - OpenCV documentation](https://docs.opencv.org/4.x/d2/d96/tutorial_py_table_of_contents_imgproc.html)
 
