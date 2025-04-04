@@ -1,11 +1,12 @@
 import numpy as np
 import cv2 as cv
+import os
 from paddleocr import PaddleOCR
 
 
 class TextDetection:
     def __init__(self, det_model_dir: str):
-        self.ocr = PaddleOCR(det_model_dir=det_model_dir)
+        self.ocr = PaddleOCR(text_detection_model_dir=det_model_dir)
 
     def detect_text_coordinates(self, image_path: str) -> np.ndarray:
         """
@@ -53,8 +54,8 @@ class TextDetection:
             for index, box in enumerate(bounding_boxes):
                 x, y, w, h = cv.boundingRect(box)
                 rectangular_box = cv.minAreaRect(box)
-                coordinates = np.int0(cv.boxPoints(rectangular_box))
-                cv.drawContours(image, [coordinates], 0, (0, 0, 255), 3, cv.LINE_AA)
+                coordinates = np.int32(cv.boxPoints(rectangular_box))
+                cv.drawContours(image, [coordinates], -1, (0, 0, 255), 3, cv.LINE_AA)
                 cv.putText(image, str(index + 1), (x + w // 4, y + h // 4),
                         cv.FONT_HERSHEY_COMPLEX_SMALL, 2, (0, 0, 0), 2, cv.LINE_AA)
             

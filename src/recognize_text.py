@@ -1,5 +1,6 @@
 import numpy as np
-from openvino.runtime import Core
+import os
+from openvino import Core
 from itertools import groupby
 
 class TextRecognition:
@@ -35,9 +36,18 @@ class TextRecognition:
         return predictions_index
 
     @staticmethod
-    def prepare_charlist():
+    def prepare_charlist(charlist_path='charlists/japanese_charlist.txt'):
         blank_char = "~"
-        with open('charlists/japanese_charlist.txt', "r", encoding="utf-8") as charlist:
+        if not os.path.exists(charlist_path):
+             # Try to find it relative to the current script if not found directly
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.abspath(os.path.join(current_dir, '..'))
+            charlist_path = os.path.join(project_root, charlist_path)
+            
+        if not os.path.exists(charlist_path):
+            raise FileNotFoundError(f"Charlist file not found at: {charlist_path}")
+
+        with open(charlist_path, "r", encoding="utf-8") as charlist:
             letters = blank_char + "".join(line.strip() for line in charlist)
         return letters
 
@@ -46,8 +56,6 @@ class TextRecognition:
         output_text_indexes = list(groupby(predictions_index))
         output_text_indexes = np.array([key for key, _ in output_text_indexes])
         output_text_indexes = output_text_indexes[output_text_indexes != 0]
-        print(output_text_indexes)
         output_char = [letters[letter_index] for letter_index in output_text_indexes]
-        print(output_char)
         output_text = "".join(output_char)
         return output_text

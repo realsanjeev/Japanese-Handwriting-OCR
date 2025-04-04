@@ -1,6 +1,7 @@
-paddlepaddle==2.5.2
+paddlepaddle==3.2.2
 # build paddleOCR from main
-git+https://github.com/PaddlePaddle/PaddleOCR.git#egg=PaddleOCR
+# git+https://github.com/PaddlePaddle/PaddleOCR.git#egg=PaddleOCR
+PaddleOCR==2.10.0
 openvino
 protobuf
 

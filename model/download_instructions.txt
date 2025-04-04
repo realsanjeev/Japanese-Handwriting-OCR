@@ -1,0 +1,6 @@
+https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_infer.tar
+https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_rec_infer.tar
+
+### Download the model and Extract it in det_model folder
+#~ mkdir det_model
+#~ tar -xvf ch_PP-OCRv4_det_infer.tar -C det_model

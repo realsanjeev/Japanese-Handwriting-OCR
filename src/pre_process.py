@@ -1,6 +1,7 @@
+import os
 import numpy as np
 import cv2 as cv
-from src.utils import show_image
+from src.utils import show_image, make_folder
 
 def apply_threshold(image_path, save_path: str):
     """
@@ -41,21 +42,26 @@ def resize_image(H, W, image_path: str):
     image = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
     
     # Calculate the scale ratio to resize image to the target height
-    image_height, _ = image.shape
-    scale_ratio = H / image_height
+    image_height, image_width = image.shape
     
-    # Resize image to the target height
-    resized_image = cv.resize(image, None, fx=scale_ratio, fy=scale_ratio, interpolation=cv.INTER_AREA)
+    # Scale to fit into H x W box while maintaining aspect ratio
+    scale = min(H / image_height, W / image_width)
     
-    # Pad the resized image to match the desired dimensions
-    padded_image = np.pad(resized_image, ((0, 0), (0, W - resized_image.shape[1])), mode="constant", constant_values=255)
+    new_height = int(image_height * scale)
+    new_width = int(image_width * scale)
     
-    # Save the padded image for inspection
-    cv.imwrite(f'test/padded_{image_path.split("_")[-1][:-3]}.jpg', padded_image)
-
+    # Resize image
+    resized_image = cv.resize(image, (new_width, new_height), interpolation=cv.INTER_AREA)
+    
+    # Pad the resized image to match the desired dimensions (H, W)
+    # Padding right and bottom to keep the image top-left aligned
+    pad_h = H - new_height
+    pad_w = W - new_width
+    
+    padded_image = np.pad(resized_image, ((0, pad_h), (0, pad_w)), mode="constant", constant_values=255)
+    
     # Reshape to match the network input shape
     input_image = padded_image[None, None, :, :]
-    # show_image(padded_image, "resize image")
     
     return input_image
 
@@ -73,27 +79,23 @@ def crop_image(image, bounding_boxes, path_to_save: str, offset: int=0):
             May lower accuracy of character recognization if image is used for OCR here
     """
     image_height, image_width = image.shape[:2]
-    print("Bounding box shape:", np.array(bounding_boxes).shape)
 
     for idx, coordinates in enumerate(bounding_boxes[0]):
         points = np.array(coordinates, dtype=np.int32)
-        print("Processing bounding box points shape:", points.shape)
 
         x, y, w, h = cv.boundingRect(points)
         mask = np.zeros((image_height, image_width), dtype=np.uint8)
         cv.fillPoly(mask, [points], 255)
 
-        masked_image = cv.bitwise_and(image, image, mask=mask)
+        # Use 255 (white) for background instead of 0 (black)
+        masked_image = np.full_like(image, 255)
+        cv.copyTo(src=image, mask=mask, dst=masked_image)
 
         offset = int(offset)
         cropped_image = masked_image[
             max(y - offset, 0): min(y + h + offset, image_height),
             max(x - offset, 0): min(x + w + offset, image_width)
         ]
-        print("-------------------------")
-        # show_image(image, "msaked image" )
-        # show_image(cropped_image, "cropped_image")
 
         crop_path = f"{path_to_save}/crop_{idx}.jpg"
         cv.imwrite(crop_path, cropped_image)
-        print(f"Cropped image saved at: {crop_path}")

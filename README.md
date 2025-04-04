@@ -7,8 +7,10 @@ Look into other OCR technique in [notebook dir](./notebooks/)
 ![OCR Pipeline](./japanese-handwriting-images/images/Japanese-Handwriting-OCR.png)
 
 ### Prerequisites
-- Python >= 3.8.0
+- Python >= 3.8.0 < 3.13
 - Pip >= 24.0
+- PaddleOCR==2.10.0 (Must be less than 3.0)
+- paddlepaddle==3.2.2 (If you get  illegal instruction error. You may update it)
 
 ### Set Up a Virtual Environment
 To create and activate a virtual environment:
@@ -31,7 +33,7 @@ pip install -r requirements.txt
 
 You can update the model for text detection and text recognition in [main.py](./main.py) if you want different models:
 ```python
-text_detection = TextDetection(det_model_dir='model/det_model/ch_ppocr_server_v2.0_det_infer/')
+text_detection = TextDetection(det_model_dir='model/det_model/ch_PP-OCRv4_det_infer.tar/')
 text_recognition = TextRecognition('model/handwritten-japanese-recognition-0001/FP32/handwritten-japanese-recognition-0001')
 ```
 
