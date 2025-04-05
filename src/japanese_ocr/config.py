@@ -2,14 +2,20 @@ import os
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
+from typing import Optional
+
 class Settings(BaseSettings):
     det_model_dir: str = Field(
         default="model/det_model/ch_PP-OCRv4_det_infer.tar",
         description="Path to the detection model directory or tar file."
     )
-    rec_model_path: str = Field(
-        default="model/handwritten-japanese-recognition-0001/FP32/handwritten-japanese-recognition-0001",
-        description="Path to the recognition model (without extension)."
+    rec_language: str = Field(
+        default="japan",
+        description="Language for recognition model (default: japan)."
+    )
+    rec_model_dir: Optional[str] = Field(
+        default=None,
+        description="Optional path to custom recognition model dir."
     )
     charlist_path: str = Field(
         default="charlists/japanese_charlist.txt",

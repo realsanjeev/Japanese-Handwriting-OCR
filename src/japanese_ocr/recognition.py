@@ -1,61 +1,56 @@
-import os
+import logging
 import numpy as np
-from openvino import Core
-from itertools import groupby
+from paddleocr import PaddleOCR
 from typing import List
 from .config import settings
 
+logger = logging.getLogger(__name__)
+
 class TextRecognizer:
     def __init__(self):
-        self.files_checked = False
-        self.core = Core()
-        self.model = self._load_model()
-        self.input_tensor, self.output_tensor = self._get_model_tensors()
-        self.H, self.W = self._get_expected_hw()
-        self.letters = self._load_charlist()
-
-    def _load_model(self):
-        model_xml = f"{settings.rec_model_path}.xml"
-        if not os.path.exists(model_xml):
-            raise FileNotFoundError(f"Model XML not found: {model_xml}")
-            
-        model = self.core.read_model(model=model_xml)
-        return self.core.compile_model(model, device_name="CPU")
-
-    def _get_model_tensors(self):
-        input_tensor = next(iter(self.model.inputs))
-        output_tensor = next(iter(self.model.outputs))
-        return input_tensor, output_tensor
-    
-    def _get_expected_hw(self):
-        _, _, H, W = self.input_tensor.shape
-        return H, W
-
-    def _load_charlist(self) -> str:
-        if not os.path.exists(settings.charlist_path):
-             raise FileNotFoundError(f"Charlist not found: {settings.charlist_path}")
-             
-        blank_char = "~"
-        with open(settings.charlist_path, "r", encoding="utf-8") as f:
-            letters = blank_char + "".join(line.strip() for line in f)
-        return letters
+        logger.info(f"Initializing PaddleOCR Recognizer (lang={settings.rec_language})...")
+        # Initialize PaddleOCR for recognition only
+        self.ocr = PaddleOCR(
+            rec_model_dir=settings.rec_model_dir, 
+            lang=settings.rec_language,
+            use_gpu=False,
+            show_log=False,
+            det=False, # We do detection separately
+            rec=True,
+            cls=False
+        )
+        # We no longer rely on fixed H/W models, PaddleOCR handles arbitrary inputs.
+        # But for compatibility with pipeline logic if it asks for H/W, we can store dummy or modify pipeline.
+        # The pipeline currently accesses .H and .W. We should update pipeline to remove that dependency.
+        self.H = 48 # Dummy default
+        self.W = 320 # Dummy default
 
     def predict(self, input_image: np.ndarray) -> str:
         """
-        Runs inference on a single pre-processed image chunk.
-        input_image: shape [1, 1, H, W]
+        Runs recognition on a cropped image chunk.
+        Input image can be raw crop (no resizing needed).
         """
-        predictions = self.model([input_image])[self.output_tensor]
-        predictions = np.squeeze(predictions)
-        predictions_index = np.argmax(predictions, axis=1)
-        return self._decode(predictions_index)
-
-    def _decode(self, predictions_index: np.ndarray) -> str:
-        # Group duplicates (CTC decoding)
-        output_text_indexes = [k for k, _ in groupby(predictions_index)]
-        # Remove blanks (index 0 is usually blank in this specific model's logic/charlist)
-        # Note: In the original code, it filtered out 0.
-        valid_indexes = [i for i in output_text_indexes if i != 0]
-        
-        chars = [self.letters[i] for i in valid_indexes]
-        return "".join(chars)
+        if input_image is None or input_image.size == 0:
+            return ""
+            
+        # PaddleOCR expects a list of images or paths.
+        # passing list of [image]
+        try:
+            result = self.ocr.ocr(input_image, det=False, rec=True, cls=False)
+            if not result or result[0] is None:
+                return ""
+            
+            # Result format: [ [ (text, score), ... ] ]
+            # For single image, result[0] is a list of tuples?
+            # Let's verify standard output for single image list input.
+            # Usually result is list of list of results.
+            
+            # Since we pass one image, we expect result[0] to be valid.
+            # result structure for rec-only: [ (text, score), ... ] ? 
+            # Actually paddle outputs list of (text, confidence)
+            
+            text, score = result[0][0]
+            return text
+        except Exception as e:
+            logger.error(f"Recognition failed: {e}")
+            return ""

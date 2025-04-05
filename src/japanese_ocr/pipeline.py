@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 from .detection import TextDetector
 from .recognition import TextRecognizer
-from .processing import apply_threshold, resize_image, crop_box
+from .processing import crop_box
 from .domain import OCRResult, TextSegment
 from .config import settings
 from .utils import save_to_json, draw_boxes
@@ -40,15 +40,8 @@ class OCRPipeline:
             # Crop
             cropped = crop_box(image, box.points, offset=0)
             
-            # Pre-process for recognition
-            thresholded = apply_threshold(cropped)
-            # The recognition module expects H, W from its model definition
-            # We access them via public attributes we should expose or passed params
-            # Accessing initialized recognizer's H/W
-            input_image = resize_image(self.recognizer.H, self.recognizer.W, thresholded)
-            
-            # Recognize
-            text = self.recognizer.predict(input_image)
+            # PaddleOCR handles its own pre-processing (resize, norm), so we pass raw crop.
+            text = self.recognizer.predict(cropped)
             
             segment = TextSegment(
                 id=i + 1,
