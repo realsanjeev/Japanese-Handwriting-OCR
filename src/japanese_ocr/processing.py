@@ -44,25 +44,42 @@ def resize_image(H: int, W: int, image: np.ndarray) -> np.ndarray:
 
 def crop_box(image: np.ndarray, points: List[Tuple[float, float]], offset: int = 0) -> np.ndarray:
     """
-    Crops a single bounding box from the image.
+    Crops a detected text box using perspective transform to straighten it.
+    Args:
+        image: Source image.
+        points: List of 4 points [(x,y), ...] from the detector.
+        offset: Padding offset (not fully utilized in strict warp, but kept for signature).
+    Returns:
+        The straightforward, unwarped (deskewed) text image.
     """
-    image_height, image_width = image.shape[:2]
-    np_points = np.array(points, dtype=np.int32)
+    points = np.array(points, dtype=np.float32)
     
-    x, y, w, h = cv.boundingRect(np_points)
+    # PaddleOCR output usually ordered: TL, TR, BR, BL
+    # But let's robustly determine width/height
     
-    # Create mask
-    mask = np.zeros((image_height, image_width), dtype=np.uint8)
-    cv.fillPoly(mask, [np_points], 255)
+    # 1. Order points (standard assumption for Paddle is good, but let's be safe if needed)
+    #    (tl, tr, br, bl) = points
+    tl, tr, br, bl = points
     
-    # Mask image (white background)
-    masked = np.full_like(image, 255)
-    cv.copyTo(src=image, mask=mask, dst=masked)
+    # 2. Compute width of the new image
+    widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    maxWidth = max(int(widthA), int(widthB))
     
-    # Crop
-    y_min = max(y - offset, 0)
-    y_max = min(y + h + offset, image_height)
-    x_min = max(x - offset, 0)
-    x_max = min(x + w + offset, image_width)
+    # 3. Compute height of the new image
+    heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    maxHeight = max(int(heightA), int(heightB))
     
-    return masked[y_min:y_max, x_min:x_max]
+    # 4. Construct destination points
+    dst = np.array([
+        [0, 0],
+        [maxWidth - 1, 0],
+        [maxWidth - 1, maxHeight - 1],
+        [0, maxHeight - 1]], dtype="float32")
+        
+    # 5. Compute the Perspective Transform Matrix and Warp
+    M = cv.getPerspectiveTransform(points, dst)
+    warped = cv.warpPerspective(image, M, (maxWidth, maxHeight))
+    
+    return warped
