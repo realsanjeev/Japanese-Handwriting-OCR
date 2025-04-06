@@ -15,15 +15,10 @@ class TextRecognizer:
             lang=settings.rec_language,
             use_gpu=False,
             show_log=False,
-            det=False, # We do detection separately
+            det=False,
             rec=True,
             cls=False
         )
-        # We no longer rely on fixed H/W models, PaddleOCR handles arbitrary inputs.
-        # But for compatibility with pipeline logic if it asks for H/W, we can store dummy or modify pipeline.
-        # The pipeline currently accesses .H and .W. We should update pipeline to remove that dependency.
-        self.H = 48 # Dummy default
-        self.W = 320 # Dummy default
 
     def predict(self, input_image: np.ndarray) -> str:
         """

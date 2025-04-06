@@ -6,7 +6,7 @@ A robust, modular Optical Character Recognition (OCR) system for Japanese handwr
 -   **In-Memory Processing** for high performance.
 -   **Perspective Warping** for accurate text alignment.
 
-![OCR Pipeline](./japanese-handwriting-images/images/Japanese-Handwriting-OCR.png)
+![OCR Pipeline](./data/demos/architecture.png)
 
 ## 🚀 Features
 -   **Architecture**: Modular design with separate detection, recognition, and pipeline logic.
@@ -42,7 +42,7 @@ A robust, modular Optical Character Recognition (OCR) system for Japanese handwr
 ### Basic Execution
 Run OCR on an image using default settings:
 ```bash
-python main.py japanese-handwriting-images/image-03.jpeg
+python main.py data/image-03.jpeg
 ```
 
 ### Advanced Options
