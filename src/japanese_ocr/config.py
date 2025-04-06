@@ -17,10 +17,6 @@ class Settings(BaseSettings):
         default=None,
         description="Optional path to custom recognition model dir."
     )
-    charlist_path: str = Field(
-        default="charlists/japanese_charlist.txt",
-        description="Path to the character list file."
-    )
     output_dir: str = Field(
         default="output",
         description="Directory to save output files."

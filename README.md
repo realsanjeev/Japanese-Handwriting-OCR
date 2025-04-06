@@ -1,10 +1,10 @@
 # Japanese Handwriting OCR
 
 A robust, modular Optical Character Recognition (OCR) system for Japanese handwriting. This project utilizes:
--   **PaddleOCR** for text detection.
--   **OpenVINO** for text recognition.
+-   **PaddleOCR** for both text detection and recognition.
 -   **Pydantic** for robust configuration.
 -   **In-Memory Processing** for high performance.
+-   **Perspective Warping** for accurate text alignment.
 
 ![OCR Pipeline](./japanese-handwriting-images/images/Japanese-Handwriting-OCR.png)
 
@@ -83,16 +83,11 @@ src/japanese_ocr/
 ├── pipeline.py    # Orchestrates the Detection -> Recognition flow
 ├── config.py      # Pydantic-based settings management
 ├── domain.py      # Data models (BoundingBox, TextSegment)
-├── detection.py   # Wrapper for PaddleOCR
-├── recognition.py # Wrapper for OpenVINO inference
-└── processing.py  # In-memory image operations (Resize, Threshold, Crop)
+├── detection.py   # Wrapper for PaddleOCR (Detection)
+├── recognition.py # Wrapper for PaddleOCR (Recognition)
+└── processing.py  # In-memory image operations (Perspective Warp, Crop)
 ```
 
 ## 🔗 References
-**PaddlePaddle**
-- [PaddleOCR - Official Github Repo](https://github.com/PaddlePaddle/PaddleOCR/blob/main/README_en.md)
+- [PaddleOCR - Official Github Repo](https://github.com/PaddlePaddle/PaddleOCR/blob/main/README.md)
 - [Image Processing in OpenCV - OpenCV documentation](https://docs.opencv.org/4.x/d2/d96/tutorial_py_table_of_contents_imgproc.html)
-
-**OpenVINO**
-- [Handwritten Chinese and Japanese OCR with OpenVINO - OpenVINO Documentation](https://docs.openvino.ai/2022.3/notebooks/209-handwritten-ocr-with-output.html)
-- [OpenVINO Models Repository](https://storage.openvinotoolkit.org/repositories/open_model_zoo/2023.0/models_bin/1/)
