@@ -22,7 +22,7 @@ A robust, modular Optical Character Recognition (OCR) system for Japanese handwr
 
 1.  **Clone the repository**:
     ```bash
-    git clone <repo_url>
+    git clone https://github.com/realsanjeev/Japanese-Handwriting-OCR.git
     cd Japanese-Handwriting-OCR
     ```
 
